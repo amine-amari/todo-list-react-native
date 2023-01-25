@@ -1,9 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Keyboard, StyleSheet, Text, View } from 'react-native';
 import { KeyboardAvoidingView, Platform, TextInput, TouchableOpacity } from 'react-native-web';
 import Task from './components/Task';
 
 export default function App() {
+
+  const [task, setTask] = useState();
+  const [taskItems, setTaskItems] = useState([]);
+
+  const handAddTask = () => {
+    Keyboard.dismiss();
+    setTaskItems([...taskItems, task]);
+    setTask(null);
+  }
+
   return (
     <View style={styles.container}>
       {/* Today's Tasks*/}
@@ -11,8 +21,11 @@ export default function App() {
         <Text style={styles.sectionTitle}>Today's Tasks</Text>
         <View style={styles.items}>
           {/* This is where the tasks will go */}
-          <Task text={'Task 1'}/>
-          <Task text={'Task 2'}/>
+          {
+            taskItems.map((item, index) => {
+              return <Task key={index} text={item}/>
+            })
+          }
         </View>
       </View>
       {/* Write the task section */}
@@ -20,8 +33,8 @@ export default function App() {
         behavior={Platform.OS === 'ios' ? 'padding': 'height'}
         style={styles.writeTaskWrapper}
       >
-        <TextInput style={styles.input} placeholder={'Write a task'}/>
-        <TouchableOpacity>
+        <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText= {(text) => setTask(text)}/>
+        <TouchableOpacity onPress={() => handAddTask()}>
           <View style={styles.addWrapper}>
             <Text style={styles.addText}>+</Text>
           </View>
